@@ -1,0 +1,156 @@
+(function() {
+    'use strict';
+
+    // 定义目标价格
+    const targetPrice = 0.000043;
+
+    // 检查并显示警告的函数
+    function checkPriceAndWarn() {
+        const url = window.location.href;
+
+        // 确保在正确的页面执行
+        if (url.includes('https://ordinalswallet.com/collection/tap-DMT-NAT')) {
+            console.log("正在监控 'tap-DMT-NAT' 系列的价格...");
+
+            // 寻找包含价格的元素
+            // 这可能需要根据网页的实际HTML结构进行调整
+            // 假设价格信息通常在包含“price”或“listing”关键字的元素中
+            // 我们可以尝试查找特定的类名或标签
+            // 这里是一个假设的查找方式，可能需要根据实际HTML进行修改
+            const priceElement = document.querySelector('.flex.items-center.justify-end'); // 假设最低价格的元素有这个类名
+            // 或者：
+            // const priceElement = document.querySelector('div.price-display-class span.price-value');
+            // 你可能需要打开开发者工具 (F12) 检查价格元素的精确选择器
+
+            if (priceElement) {
+                // 假设价格文本包含货币符号，需要提取数字部分
+                const priceText = priceElement.textContent;
+                // 移除所有非数字和非小数点字符，然后转换为浮点数
+                const currentPrice = parseFloat(priceText.replace(/[^\d.]/g, ''));
+
+                if (!isNaN(currentPrice)) {
+                    console.log(`当前最低卖出价: ${currentPrice}`);
+
+                    if (currentPrice <= targetPrice) {
+                        const message = `警告：当前最低卖出价 ${currentPrice} BTC 小于或等于 ${targetPrice} BTC！`;
+                        //alert(message); // 弹出警告框
+                        //console.warn(message); // 在控制台也显示警告
+                        // 你也可以在这里添加其他视觉提示，例如：
+                        // priceElement.style.backgroundColor = 'yellow';
+                        // priceElement.style.border = '2px solid red';
+                        // 播放语音警报
+                        //playAlertSound();
+
+                        // 硬编码使用远程它网语音
+                       //----------------------------------------------------------------------
+                       //2025-09-17
+                       var audio = new Audio('https://cdn.freesound.org/previews/428/428631_5612853-lq.mp3');
+                       audio.addEventListener('error', function() {
+                          console.error('音乐加载错误.');
+                       });
+                      audio.play();
+
+                      //添加一个表格和文本框
+                      Addctl();
+
+
+                         //----------------------------------------------------------------------
+
+                    } else {
+                        console.log(`当前价格 ${currentPrice} BTC 高于 ${targetPrice} BTC，无需警告。`);
+                    }
+                } else {
+                    console.error('无法解析价格文本:', priceText);
+                }
+            } else {
+                console.warn('未找到最低卖出价格元素。请检查选择器是否正确。');
+                // 尝试查找其他可能包含价格的元素，例如：
+                 const potentialPriceElements = document.querySelectorAll('div, span, p');
+                 potentialPriceElements.forEach(el => {
+                     if (el.textContent.includes('BTC') && el.textContent.match(/\d+\.\d+/)) {
+                         console.log('可能的价格元素:', el.textContent, el);
+                     }
+                 });
+            }
+        } else {
+            console.log("不在目标页面上，脚本未执行。");
+        }
+    }
+
+    // 设置一个定时器，每隔一段时间检查一次价格
+    // 例如，每5秒检查一次
+    const checkInterval = setInterval(checkPriceAndWarn, 5000);
+
+    // 如果需要，你也可以在页面加载完成后立即执行一次
+    checkPriceAndWarn();
+
+    // 添加语音播放提示
+    function playAlertSound() {
+        const audio = new Audio('path/jinbao.wav'); // 替换为你的音频文件路径
+        audio.play();
+    }
+
+    //添加控制控件，2025-09-17
+   function Addctl() {
+      // 获取目标DIV元素
+      var targetDiv = document.querySelector('.relative.w-full.overflow-auto');
+
+     //查找条件值文本框是否存
+     // 指定要查找的文本框的ID或类名
+     const targetId = 'tjTextBox'; 
+ 
+     // 查找指定的文本框
+     const textBox = document.getElementById(targetId);
+ 
+     // 如果找不到指定的文本框，则添加一个新的
+     if (!textBox) {
+         // 创建一个新的文本框
+         const newTextBox = document.createElement('input');
+         newTextBox.type = 'text';
+         newTextBox.value = '0.0000036'; // 设置值为0.0000036
+         newTextBox.id = targetId; // 确保新添加的文本框有相同的ID，或者你可以使用其他方式定位它
+         newTextBox.style.color = 'black'; //设置文字颜色为黑色
+         newTextBox.style.textAlign = 'right'; //右对齐
+ 
+         // 将新文本框添加到特定的父元素中
+         targetDiv.appendChild(newTextBox);
+     } else {
+         // 如果已存在，可以设置其值（如果需要）
+         textBox.value = '0.0000036'; // 确保这是你想要设置的初始值
+     }
+
+
+      // 定义要查找的按钮ID的选择器
+      const exitBtnId = 'exitButton';
+ 
+      // 查找按钮
+      const existingButton = document.getElementById(exitBtnId);
+ 
+      // 检查按钮是否存在
+      if (!existingButton) {
+          // 创建一个新的按钮元素
+          const newButton = document.createElement('button');
+          newButton.textContent = '停止运行'; // 设置按钮的文本内容
+          newButton.id = exitBtnId; // 设置按钮的ID，以便可以再次定位它（如果需要）
+          newButton.style.margin = '10px'; // 设置一些样式（可选）
+          newButton.style.padding = '10px'; // 设置一些样式（可选）
+         //添加按钮事件
+         newButton.addEventListener('click', function() {
+             clearInterval(window.ordinalPriceCheckerInterval);
+             alert('已经退出了运行!'); // 点击按钮时显示一个警告框
+         });
+
+          // 将新按钮添加到父
+          targetDiv.appendChild(newButton);
+      }
+ 
+      
+      
+    }
+
+    // 在控制台提供一个停止脚本的方法
+    console.log(`脚本已启动，每 ${5000 / 1000} 秒检查一次价格。`);
+    console.log("在控制台输入 'clearInterval(window.ordinalPriceCheckerInterval)' 可以停止脚本。");
+    window.ordinalPriceCheckerInterval = checkInterval; // 将interval ID暴露在window对象上，方便停止
+
+})();
